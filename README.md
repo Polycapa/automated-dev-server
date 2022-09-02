@@ -6,10 +6,14 @@ I use it to run recurrent tasks when working.
 
 ## Usage
 
+> Project only works on Chromium based browsers with `--remote-debugging-port=9222` flag.
+
+````bash
+
 ```bash
 npm install
 npm start
-```
+````
 
 By default, it will run on all pages with `localhost` in url.
 You can specify a different url with the `URL` environment variable.
