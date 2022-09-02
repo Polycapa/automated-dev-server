@@ -29,6 +29,10 @@ export default class MainPage {
     this.page.on('dialog', (dialog) => dialog.accept());
     await this.loadContexts();
     await this.generateMenu();
+    this.page.on('load', () => {
+      console.log(`Page ${this.page.url()} navigated, adding back menu`);
+      this.generateMenu(true);
+    });
   }
 
   private contextSelected(contextName: string): Promise<void> {
@@ -61,43 +65,45 @@ export default class MainPage {
     return this.writeContexts();
   }
 
-  private async generateMenu() {
+  private async generateMenu(skipReload = false) {
     const script = await fs.readFile(
       path.join(__dirname, 'playwright-injected-menu.js'),
       'utf-8'
     );
 
-    await this.page.reload();
+    if (!skipReload) {
+      await this.page.reload();
+
+      await this.page.exposeFunction(
+        'playwrightContextSelected',
+        async (context: string): Promise<Error | undefined> => {
+          try {
+            await this.contextSelected(context);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error(error);
+              return error;
+            }
+          }
+          return undefined;
+        }
+      );
+      await this.page.exposeFunction(
+        'playwrightContextDeleted',
+        (context: string) => {
+          this.deleteContext(context);
+        }
+      );
+      await this.page.exposeFunction(
+        'playwrightSaveContext',
+        (context: ContextJson) => this.saveContext(context)
+      );
+    }
 
     await this.page.addScriptTag({
       content: script,
       type: 'module',
     });
-
-    await this.page.exposeFunction(
-      'playwrightContextSelected',
-      async (context: string): Promise<Error | undefined> => {
-        try {
-          await this.contextSelected(context);
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error(error);
-            return error;
-          }
-        }
-        return undefined;
-      }
-    );
-    await this.page.exposeFunction(
-      'playwrightContextDeleted',
-      (context: string) => {
-        this.deleteContext(context);
-      }
-    );
-    await this.page.exposeFunction(
-      'playwrightSaveContext',
-      (context: ContextJson) => this.saveContext(context)
-    );
 
     await this.page.evaluate((initialContextList) => {
       const menu = document.createElement('playwright-injected-menu');
