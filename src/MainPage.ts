@@ -10,8 +10,9 @@ export default class MainPage {
 
   private contexts: Context[] = [];
 
-  private readonly contextsPath =
-    process.env.CONTEXTS_PATH ?? path.join(__dirname, 'contexts.json');
+  private readonly contextsPath = process.env.CONTEXTS_PATH
+    ? process.env.CONTEXTS_PATH
+    : path.join(__dirname, 'contexts.json');
 
   private readonly page: Page;
 

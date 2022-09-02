@@ -13,7 +13,7 @@ import MainPage from './MainPage';
   const wsEndpoint = chromeDebugResponse.webSocketDebuggerUrl;
   const browser = await chromium.connectOverCDP(wsEndpoint, {});
   const context = browser.contexts()[0];
-  const url = process.env.URL ?? 'localhost';
+  const url = process.env.URL ? process.env.URL : 'localhost';
 
   const pages = context
     .pages()
