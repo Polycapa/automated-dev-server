@@ -4,6 +4,7 @@ import * as readline from 'readline';
 import MainPage from './MainPage';
 
 (async () => {
+  console.log('Looking for pages...');
   const requestContext = await request.newContext();
 
   const chromeDebugResponse = await (
@@ -20,7 +21,7 @@ import MainPage from './MainPage';
     .filter((p) => url === '*' || p.url().includes(url));
 
   if (!pages.length) {
-    console.error(`No page found for url`);
+    console.error(`No page found for url ${url}`);
     process.exit(1);
   }
 
