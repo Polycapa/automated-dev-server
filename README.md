@@ -2,7 +2,7 @@
 
 A project to use Playwright to orchestrate an url with saved workflows (called contexts).
 
-I used it to run recurrent tasks when working.
+I use it to run recurrent tasks when working.
 
 ## Usage
 
