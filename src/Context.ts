@@ -6,12 +6,14 @@ import {
   FocusAction,
   GoToAction,
   PressAction,
+  RunContextAction,
   ScrollIntoViewAction,
   SelectOptionAction,
   TypeAction,
   WaitForAction,
   WaitForLoadStateAction,
 } from './Actions';
+import ContextsManager from './ContextsRunner';
 
 export type ContextJson = {
   actions: Action[];
@@ -28,6 +30,8 @@ export class Context {
   private readonly _name: string;
 
   private readonly actions: Action[];
+
+  private readonly actionTimeout = 30 * 1000;
 
   constructor(page: Page, name: string, actions: Action[]) {
     this.page = page;
@@ -73,6 +77,8 @@ export class Context {
         return this.runPressAction(updatedAction);
       case 'type':
         return this.runTypeAction(updatedAction);
+      case 'run-context':
+        return this.runRunContextAction(updatedAction);
       default:
         return undefined;
     }
@@ -80,32 +86,53 @@ export class Context {
 
   private runClickAction({ selector }: ClickAction) {
     return this.page.locator(selector).click({
-      timeout: 1000,
+      timeout: this.actionTimeout,
     });
   }
 
   private runFillAction({ selector, value }: FillAction) {
-    return this.page.locator(selector).fill(value);
+    return this.page.locator(selector).fill(value, {
+      timeout: this.actionTimeout,
+    });
   }
 
   private runPressAction({ selector, value }: PressAction) {
-    return this.page.locator(selector).press(value);
+    return this.page.locator(selector).press(value, {
+      timeout: this.actionTimeout,
+    });
   }
 
   private runTypeAction({ selector, value }: TypeAction) {
-    return this.page.locator(selector).type(value);
+    return this.page.locator(selector).type(value, {
+      timeout: this.actionTimeout,
+    });
   }
 
   private runSelectOptionAction({ selector, value }: SelectOptionAction) {
-    return this.page.locator(selector).selectOption(value);
+    return this.page.locator(selector).selectOption(value, {
+      timeout: this.actionTimeout,
+    });
   }
 
   private runWaitForAction({ selector }: WaitForAction) {
-    return this.page.locator(selector).waitFor();
+    return this.page.locator(selector).waitFor({
+      timeout: this.actionTimeout,
+    });
   }
 
   private runFocusAction({ selector }: FocusAction) {
-    return this.page.locator(selector).focus();
+    return this.page.locator(selector).focus({
+      timeout: this.actionTimeout,
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private runRunContextAction({ value }: RunContextAction) {
+    const index = parseInt(value, 10);
+    if (!Number.isNaN(index)) {
+      return ContextsManager.instance.runContext(index);
+    }
+    return undefined;
   }
 
   private runWaitForLoadStateAction({
@@ -176,6 +203,7 @@ export class Context {
           value: value ?? action.value,
         };
       case 'wait-for-load-state':
+      case 'run-context':
       case 'go-to':
         return { ...action, value: value ?? action.value };
       default:

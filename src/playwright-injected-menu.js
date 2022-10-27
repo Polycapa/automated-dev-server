@@ -182,7 +182,7 @@ export class Menu extends LitElement {
     if (this.listOpened && this.contexts) {
       return html`${this.contexts.map(
         ({ value }, index) => html`<div class="context">
-          <span class="context-name">${value}</span>
+          <span class="context-name">#${index} - ${value}</span>
           <div class="context-buttons">
             <button
               ?disabled=${this.running}
@@ -581,6 +581,11 @@ export class ContextDialog extends LitElement {
           html`${indexTemplate}
           ${content(`Type ${action.value} in ${action.selector} `)} ${buttons}`
         );
+      case 'run-context':
+        return div(
+          html`${indexTemplate} ${content(`Run context #${action.value} `)}
+          ${buttons}`
+        );
       default:
         return nothing;
     }
@@ -721,12 +726,13 @@ export class AddAction extends LitElement {
     }>
           <option value="click">click</option>
           <option value="fill">fill</option>
-          <option value="type">type</option>
-          <option value="press">press</option>
           <option value="focus">focus</option>
           <option value="go-to">go to</option>
+          <option value="press">press</option>
+          <option value="run-context">run context</option>
           <option value="scroll-into-view">scroll into view</option>
           <option value="select-option">select option</option>
+          <option value="type">type</option>
           <option value="wait-for-load-state">wait for load state</option>
           <option value="wait-for">wait for</option>
         </select>
@@ -789,6 +795,8 @@ export class AddAction extends LitElement {
         </select>`;
       case 'go-to':
         return html`<span class="element">url</span> ${fillValueInput}`;
+      case 'run-context':
+        return html`<span class="element">#</span>${fillValueInput}`;
 
       default:
         return nothing;

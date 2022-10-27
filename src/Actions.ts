@@ -6,6 +6,7 @@ interface IAction {
     | 'focus'
     | 'go-to'
     | 'press'
+    | 'run-context'
     | 'scroll-into-view'
     | 'select-option'
     | 'type'
@@ -60,12 +61,18 @@ export interface TypeAction extends IAction {
   value: string;
 }
 
+export interface RunContextAction extends IAction {
+  type: 'run-context';
+  value: string;
+}
+
 export type Action =
   | ClickAction
   | FillAction
   | FocusAction
   | GoToAction
   | PressAction
+  | RunContextAction
   | ScrollIntoViewAction
   | SelectOptionAction
   | TypeAction
