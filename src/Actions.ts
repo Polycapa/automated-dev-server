@@ -5,10 +5,12 @@ interface IAction {
     | 'fill'
     | 'focus'
     | 'go-to'
+    | 'press'
     | 'scroll-into-view'
     | 'select-option'
-    | 'wait-for'
-    | 'wait-for-load-state';
+    | 'type'
+    | 'wait-for-load-state'
+    | 'wait-for';
 }
 
 export interface ClickAction extends IAction {
@@ -48,12 +50,24 @@ export interface ScrollIntoViewAction extends IAction {
   type: 'scroll-into-view';
 }
 
+export interface PressAction extends IAction {
+  type: 'press';
+  value: string;
+}
+
+export interface TypeAction extends IAction {
+  type: 'type';
+  value: string;
+}
+
 export type Action =
   | ClickAction
   | FillAction
   | FocusAction
   | GoToAction
+  | PressAction
   | ScrollIntoViewAction
   | SelectOptionAction
+  | TypeAction
   | WaitForAction
   | WaitForLoadStateAction;

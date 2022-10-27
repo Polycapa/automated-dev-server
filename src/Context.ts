@@ -5,8 +5,10 @@ import {
   FillAction,
   FocusAction,
   GoToAction,
+  PressAction,
   ScrollIntoViewAction,
   SelectOptionAction,
+  TypeAction,
   WaitForAction,
   WaitForLoadStateAction,
 } from './Actions';
@@ -67,6 +69,10 @@ export class Context {
         return this.runScrollIntoViewAction(updatedAction);
       case 'go-to':
         return this.runGoToAction(updatedAction);
+      case 'press':
+        return this.runPressAction(updatedAction);
+      case 'type':
+        return this.runTypeAction(updatedAction);
       default:
         return undefined;
     }
@@ -80,6 +86,14 @@ export class Context {
 
   private runFillAction({ selector, value }: FillAction) {
     return this.page.locator(selector).fill(value);
+  }
+
+  private runPressAction({ selector, value }: PressAction) {
+    return this.page.locator(selector).press(value);
+  }
+
+  private runTypeAction({ selector, value }: TypeAction) {
+    return this.page.locator(selector).type(value);
   }
 
   private runSelectOptionAction({ selector, value }: SelectOptionAction) {
@@ -154,6 +168,8 @@ export class Context {
         return { ...action, selector: selector ?? action.selector };
       case 'fill':
       case 'select-option':
+      case 'press':
+      case 'type':
         return {
           ...action,
           selector: selector ?? action.selector,

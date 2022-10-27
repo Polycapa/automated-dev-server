@@ -570,6 +570,17 @@ export class ContextDialog extends LitElement {
         return div(
           html`${indexTemplate} ${content(`Go to ${action.value}`)} ${buttons}`
         );
+      case 'press':
+        return div(
+          html`${indexTemplate}
+          ${content(`Press key ${action.value} on ${action.selector} `)}
+          ${buttons}`
+        );
+      case 'type':
+        return div(
+          html`${indexTemplate}
+          ${content(`Type ${action.value} in ${action.selector} `)} ${buttons}`
+        );
       default:
         return nothing;
     }
@@ -579,14 +590,14 @@ export class ContextDialog extends LitElement {
     const [action] = this.actions.splice(index, 1);
     this.actions.splice(index - 1, 0, action);
     this.actions = [...this.actions];
-    this.#saveContext();
+    this.dataUpdated = true;
   }
 
   #downAction(index) {
     const [action] = this.actions.splice(index, 1);
     this.actions.splice(index + 1, 0, action);
     this.actions = [...this.actions];
-    this.#saveContext();
+    this.dataUpdated = true;
   }
 
   #saveContext() {
@@ -710,6 +721,8 @@ export class AddAction extends LitElement {
     }>
           <option value="click">click</option>
           <option value="fill">fill</option>
+          <option value="type">type</option>
+          <option value="press">press</option>
           <option value="focus">focus</option>
           <option value="go-to">go to</option>
           <option value="scroll-into-view">scroll into view</option>
@@ -736,13 +749,13 @@ export class AddAction extends LitElement {
       placeholder="Selector"
       .value=${this.action.selector}
     />`;
-    const fillValueInput = html`<input
+    const fillValueInput = html`<textarea
       id="fillValue"
       class="element"
       type="text"
       placeholder="Value"
       .value=${this.action.value}
-    />`;
+    /></textarea>`;
     switch (this.action.type) {
       case 'click':
       case 'wait-for':
@@ -754,6 +767,16 @@ export class AddAction extends LitElement {
           ${selectorInput}
           <span class="element">with value</span>
           ${fillValueInput} `;
+      case 'press':
+        return html`<span class="element">key</span>
+          ${fillValueInput}
+          <span class="element">in element</span>
+          ${selectorInput} `;
+      case 'type':
+        return html`<span class="element">key</span>
+          ${fillValueInput}
+          <span class="element">on element</span>
+          ${selectorInput} `;
       case 'select-option':
         return html` ${fillValueInput}
           <span class="element">in element</span>
