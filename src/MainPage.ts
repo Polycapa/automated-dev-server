@@ -26,7 +26,6 @@ export default class MainPage {
   }
 
   async main() {
-    this.page.on('dialog', (dialog) => dialog.accept());
     await this.loadContexts();
     await this.generateMenu();
     this.page.on('load', () => {

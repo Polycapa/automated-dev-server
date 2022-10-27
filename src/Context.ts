@@ -121,7 +121,18 @@ export class Context {
     }
 
     if (value === '$input') {
-      return this.page.evaluate(() => prompt('Enter value') ?? '');
+      let prompt = '';
+      const acceptPrompt = () => {};
+
+      this.page.on('dialog', acceptPrompt);
+
+      prompt = await this.page.evaluate(
+        () => window.prompt('Enter value') ?? ''
+      );
+
+      this.page.off('dialog', acceptPrompt);
+
+      return prompt;
     }
 
     return value;
