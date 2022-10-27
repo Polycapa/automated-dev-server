@@ -115,7 +115,7 @@ export class Context {
     return this.page.goto(value);
   }
 
-  private async getDynamicValue(value: string): Promise<string> {
+  private async getDynamicValue(value = ''): Promise<string> {
     if (value.startsWith('env:')) {
       return process.env[value.slice(4)] ?? '';
     }
